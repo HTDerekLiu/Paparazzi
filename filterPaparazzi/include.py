@@ -47,73 +47,73 @@ from torchvision import models
 from torch.autograd import Variable
 
 # spetial
-# import pyeltopo
+import pyeltopo
 import pyigl as igl
 from iglhelpers import *
 
-# class eltopoMesh:
-# 	def __init__(self, V,F):
-# 		self.V = np.copy(V.astype(np.float64))
-# 		self.F = np.copy(F.astype(np.int32))
-# 		# VT = V.astype(np.float64).T
-# 		# FT = F.astype(np.int32).T
-# 		self.eltopo = pyeltopo.ElTopoTracker(self.V.T,self.F.T)
-# 	def update(self, U, changeTopology = True):
-# 		UT = U.astype(np.float64).T
-# 		if changeTopology == True:
-# 			self.eltopo.step(UT, 1)
-# 		else:
-# 			self.eltopo.integrate(UT, 1)
-# 		self.V = self.eltopo.get_vertices().T
-# 		self.F = self.eltopo.get_triangles().T
-# 	def splitFace(self, FIdxList):
-# 		for ii in range(len(FIdxList)):
-# 			self.eltopo.split_triangle(ii)
-# 		self.V = self.eltopo.get_vertices().T
-# 		self.F = self.eltopo.get_triangles().T
-# 	def getMesh(self):
-# 		return self.V, self.F
+class ElTopoMesh(object):
+    def __init__(self, V,F):
+        self.V = np.copy(V.astype(np.float64))
+        self.F = np.copy(F.astype(np.int32))
+        # VT = V.astype(np.float64).T
+        # FT = F.astype(np.int32).T
+        self.eltopo = pyeltopo.ElTopoTracker(self.V.T,self.F.T)
+    def update(self, U, changeTopology = True):
+        UT = U.astype(np.float64).T
+        if changeTopology == True:
+            self.eltopo.step(UT, 1)
+        else:
+            self.eltopo.integrate(UT, 1)
+        self.V = self.eltopo.get_vertices().T
+        self.F = self.eltopo.get_triangles().T
+    def splitFace(self, FIdxList):
+        for ii in xrange(len(FIdxList)):
+            self.eltopo.split_triangle(ii)
+        self.V = self.eltopo.get_vertices().T
+        self.F = self.eltopo.get_triangles().T
+    def getMesh(self):
+        return self.V, self.F
 
 def computedNdV(V,F):
-	row = np.zeros(F.shape[0]*27)
-	col = np.zeros(F.shape[0]*27)
-	data = np.zeros(F.shape[0]*27)
-	idx = 0    
-	E = np.zeros((F.shape[0],3,3))
-	E[:,:,0] = V[F[:,2],:] - V[F[:,1],:]
-	E[:,:,1] = V[F[:,0],:] - V[F[:,2],:]
-	E[:,:,2] = V[F[:,1],:] - V[F[:,0],:]
-	FN_notunit = np.cross(E[:,:,0], E[:,:,1])
-	lenFN = np.sqrt((FN_notunit**2).sum(axis=1))
-	lenE = np.sqrt((E**2).sum(axis=1))
-	n = FN_notunit / np.tile(lenFN[:,None], (1,3))
-	minusndivAexpand = np.expand_dims(n / np.tile(-lenFN[:,None],(1,3)), axis = 1)
-	rIdx = 3*np.array(range(F.shape[0]))
-	for ii in range(3):
+    row = np.zeros(F.shape[0]*27)
+    col = np.zeros(F.shape[0]*27)
+    data = np.zeros(F.shape[0]*27)
+    idx = 0
+    E = np.zeros((F.shape[0],3,3))
+    E[:,:,0] = V[F[:,2],:] - V[F[:,1],:]
+    E[:,:,1] = V[F[:,0],:] - V[F[:,2],:]
+    E[:,:,2] = V[F[:,1],:] - V[F[:,0],:]
+    FN_notunit = np.cross(E[:,:,0], E[:,:,1])
+    lenFN = np.sqrt((FN_notunit**2).sum(axis=1))
+    lenE = np.sqrt((E**2).sum(axis=1))
+    n = FN_notunit / np.tile(lenFN[:,None], (1,3))
+    minusndivAexpand = np.expand_dims(n / np.tile(-lenFN[:,None],(1,3)), axis = 1)
+    rIdx = 3*np.array(range(F.shape[0]))
+    for ii in xrange(3):
 
-		b = E[:,:,(ii+0) % 3]
-		bcrossn = np.cross(b,n)
-		bcrossn = np.expand_dims(bcrossn, axis = 2)
-		dndvVal = np.einsum('ijk,ikl->ijl',bcrossn,minusndivAexpand);
+        b = E[:,:,(ii+0) % 3]
+        bcrossn = np.cross(b,n)
+        bcrossn = np.expand_dims(bcrossn, axis = 2)
+        dndvVal = np.einsum('ijk,ikl->ijl',bcrossn,minusndivAexpand);
 
-		# construct rIdx
-		cIdx = 3*F[:, (ii  ) % 3]
+        # construct rIdx
+        cIdx = 3*F[:, (ii  ) % 3]
 
-		for jj in range(3):
-			for kk in range(3):
-				row[idx : idx+F.shape[0]] = rIdx + kk
-				col[idx : idx+F.shape[0]] = cIdx + jj
-				data[idx : idx+F.shape[0]] = dndvVal[:,kk,jj]
-				idx += F.shape[0]
-	dndv = sparse.coo_matrix((data, (row, col)), shape=(3*F.shape[0], 3*V.shape[0]))
-	return dndv
+        for jj in xrange(3):
+            for kk in xrange(3):
+                row[idx : idx+F.shape[0]] = rIdx + kk
+                col[idx : idx+F.shape[0]] = cIdx + jj
+                data[idx : idx+F.shape[0]] = dndvVal[:,kk,jj]
+                idx += F.shape[0]
+    dndv = sparse.coo_matrix((data, (row, col)), shape=(3*F.shape[0], 3*V.shape[0]))
+    return dndv
 
 def normalizeShape(V,F):
-	VA = vertexAreas(V,F)
-	Vmean = np.sum(V * VA[:,None],axis = 0) / np.sum(VA)
-	V = V-Vmean
-	V /= V.max()
-	return V
+    VA = vertexAreas(V,F)
+    Vmean = np.sum(V * VA[:,None],axis = 0) / np.sum(VA)
+    V = V-Vmean
+    V /= V.max()
+    return V
 
 # guided filter
 def box(img, r):
@@ -189,8 +189,8 @@ def gf(I, p, r, eps, s=None):
     var_I_bb = box(I[:,:,2] * I[:,:,2], r) / N - mI_b * mI_b;
 
     a = np.zeros((h, w, 3))
-    for i in range(h):
-        for j in range(w):
+    for i in xrange(h):
+        for j in xrange(w):
             sig = np.array([
                 [var_I_rr[i,j], var_I_rg[i,j], var_I_rb[i,j]],
                 [var_I_rg[i,j], var_I_gg[i,j], var_I_gb[i,j]],
@@ -213,13 +213,13 @@ def gf(I, p, r, eps, s=None):
     return q
 
 def guidedFilter(srcImg, guideImg, r, eps):
-	# Fast guided filter
-	outImg = np.zeros_like(srcImg)
-	for ii in range(3): # guide each channel seperately
-		outImg[:,:,ii] = gf(srcImg, guideImg[:,:,ii], r, eps)
-	return outImg
+    # Fast guided filter
+    outImg = np.zeros_like(srcImg)
+    for ii in xrange(3): # guide each channel seperately
+        outImg[:,:,ii] = gf(srcImg, guideImg[:,:,ii], r, eps)
+    return outImg
 
 # def closestPt(pt, pts):
-# 	dists = pts - pt
-# 	distsSquare = np.einsum('ij,ij->i', dists, dists)
-# 	return np.argmin(distsSquare)
+#   dists = pts - pt
+#   distsSquare = np.einsum('ij,ij->i', dists, dists)
+#   return np.argmin(distsSquare)
