@@ -1,0 +1,3 @@
+[submodule "extern/eltopo"]
+	path = extern/eltopo
+	url = http://github.com/mtao/eltopo
