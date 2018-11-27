@@ -1,78 +1,15 @@
 import sys
-sys.path.append('../utils') 
-sys.path.append('/usr/local/libigl/python')  # change it according to python libigl location
+#this needs to change
+#sys.path.append('/usr/local/libigl/python')  # change it according to python libigl location
 
 # from utils
-from readOBJ import *
-from faceNormals import *
-from edges import *
-from vertexNormals import *
-from writeOBJ import *
-from vertexAreas import *
-from normalizeRow import *
-from adjacencyMat import *
-from imageL0Smooth import *
 
-import scipy.sparse as sparse
-import scipy
-import scipy.io
-import scipy.ndimage
-import scipy.spatial.distance as distance
-import scipy.misc as misc
-import matplotlib.pyplot as plt
-from scipy import fftpack
-from PIL import Image
-import PIL
-import json 
-import os
-import os.path
-import gc
-import cv2
-import time
-import skimage
-import skimage.segmentation
 
-# for pyopengl
-from pyglfw.libapi import *
-from OpenGL.GL import *
-from OpenGL.arrays import vbo
-
-# pytorch
-import torch
-import torch.nn as nn 
-import torchvision 
-import torch.optim as optim 
-from torchvision import transforms
-from torchvision import models
-from torch.autograd import Variable
 
 # spetial
-import pyeltopo
 import pyigl as igl
 from iglhelpers import *
 
-class ElTopoMesh(object):
-    def __init__(self, V,F):
-        self.V = np.copy(V.astype(np.float64))
-        self.F = np.copy(F.astype(np.int32))
-        # VT = V.astype(np.float64).T
-        # FT = F.astype(np.int32).T
-        self.eltopo = pyeltopo.ElTopoTracker(self.V.T,self.F.T)
-    def update(self, U, changeTopology = True):
-        UT = U.astype(np.float64).T
-        if changeTopology == True:
-            self.eltopo.step(UT, 1)
-        else:
-            self.eltopo.integrate(UT, 1)
-        self.V = self.eltopo.get_vertices().T
-        self.F = self.eltopo.get_triangles().T
-    def splitFace(self, FIdxList):
-        for ii in xrange(len(FIdxList)):
-            self.eltopo.split_triangle(ii)
-        self.V = self.eltopo.get_vertices().T
-        self.F = self.eltopo.get_triangles().T
-    def getMesh(self):
-        return self.V, self.F
 
 def computedNdV(V,F):
     row = np.zeros(F.shape[0]*27)

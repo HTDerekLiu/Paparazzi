@@ -1,4 +1,8 @@
-from include import *
+import numpy as np
+# for pyopengl
+from pyglfw.libapi import *
+from OpenGL.GL import *
+from OpenGL.arrays import vbo
 
 class PaparazziRenderer(object):
     def __init__(self, imgSize = 256):
