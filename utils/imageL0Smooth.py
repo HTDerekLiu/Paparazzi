@@ -46,7 +46,4 @@ def imageL0Smooth(I, lmd = 0.05):
 		beta *= betaRate
 		if beta > betaMax: 
 			break
-
-		# plt.imshow(S)
-		# plt.pause(0.01)
 	return S

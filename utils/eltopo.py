@@ -5,9 +5,7 @@ class ElTopoMesh(object):
     def __init__(self, V,F):
         self.V = np.copy(V.astype(np.float64))
         self.F = np.copy(F.astype(np.int32))
-        # VT = V.astype(np.float64).T
-        # FT = F.astype(np.int32).T
-        self.eltopo = pyeltopo.ElTopoTracker(self.V.T,self.F.T)
+        self.eltopo = pyeltopo.ElTopoTracker(self.V.T,self.F.T, True)
     def update(self, U, changeTopology = True):
         UT = U.astype(np.float64).T
         if changeTopology == True:

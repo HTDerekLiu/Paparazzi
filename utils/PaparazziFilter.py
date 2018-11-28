@@ -1,21 +1,24 @@
-from readOBJ import *
-from renderer import *
 import gc
 import time
-import skimage
-import skimage.segmentation
+import numpy as np
+import scipy
+import scipy.sparse as sparse
+import scipy.misc as misc
+
+from computedNdV import *
+from readOBJ import *
+from vertexNormals import *
+from vertexAreas import *
+from writeOBJ import *
+from PaparazziRenderer import *
+from eltopo import *
 
 
-
-class Paparazzi(object):
+class PaparazziFilter(object):
 
     def __init__(self,meshPath,offsetPath, imgSize
         # parameters for optimization (NADAM [Dozat et al. 2016])
         ,windowSize = 0.5
-        ,timeStep = 0
-        ,beta1 = 0.9
-        ,beta2 = 0.999
-        ,eps = 1e-8
         ,eltopoFreq = 30 # number of iterations to perform El Topo once
             ):
         self.V,self.F = readOBJ(meshPath)
@@ -27,47 +30,49 @@ class Paparazzi(object):
         self.VAo = vertexAreas(self.Vo, self.Fo)
         self.VAoCumsum = np.cumsum(self.VAo) / self.VAo.sum() # for vertex area weighted uniform sampling
 
-        # initialize renderer
-        # windowSize = 0.5
-
+        # initialize renderer parameters
         self.windowSize = windowSize
-        self.timeStep = timeStep 
-        self.beta1 = beta1 
-        self.beta2 = beta2 
-        self.eps = eps 
+        self.imgSize = imgSize
         self.eltopoFreq = eltopoFreq
 
-    def run(self,maxIter, filterFunc): 
-        V = self.V
-        F = self.F
+    def run(self,maxIter, lr, filterFunc, outputFolder = None): 
         renderer = PaparazziRenderer(imgSize = self.imgSize)
         renderer.setMesh(self.V,self.F)
         firstM = np.zeros(self.V.shape)
         secondM = np.zeros(self.V.shape)
+        timeStep = 0
+        beta1 = 0.9
+        beta2 = 0.999
+        eps = 1e-8
         for iteration in xrange(maxIter):
-            # reduce learning rate
-            if iteration == 2500:
-                lr = 1e-5
-        
+            # if near converge, reduce the learning rate (stepsize)
+            if iteration == int(maxIter * 0.9):
+                lr = lr / 5.0
+
             # sample camera from offset surface
             viewIdx = np.searchsorted(self.VAoCumsum,np.random.rand())
-            renderer.setCamera(windowSize, Vo[viewIdx,:], -VNo[viewIdx,:])
+            renderer.setCamera(self.windowSize, self.Vo[viewIdx,:], -self.VNo[viewIdx,:])
         
             # set light 
             x,y,z = renderer.getCameraFrame()
             renderer.setLights(x,y,z, np.array([1,0,0]), np.array([0,1,0]), np.array([0,0,1])) # 3 rendererGB directional lights
         
             # set geometry
-            renderer.setMesh(V,F)
+            renderer.setMesh(self.V,self.F)
         
             # rendering
             img = renderer.draw()
-        
+
+            # image filtering
             filtImg = filterFunc(img)
-        
+
+            # # draw current image (for debug)
+            # if iteration % 25 == 0:
+            #     misc.imsave('img.jpg', (img*255).astype(np.uint8))
+            #     misc.imsave('filtImg.jpg', (filtImg*255).astype(np.uint8))
         
             # compute delta R
-            dR = (img - filtImg).reshape(1,3*imgSize**2)
+            dR = (img - filtImg).reshape(1,3*self.imgSize**2)
         
             # compute dRdN
             idxImg, actFIdx, actRow = renderer.draw("faceIdx")
@@ -90,10 +95,10 @@ class Paparazzi(object):
                 my_ones * np.dot(LDir[:,1], LC[:,2]), # dBdNy
                 my_ones * np.dot(LDir[:,2], LC[:,2]), # dBdNz
                 ))
-            dRdN = sparse.csc_matrix((data, (row, col)), shape=(3*imgSize**2, 3*F.shape[0]))
+            dRdN = sparse.csc_matrix((data, (row, col)), shape=(3*self.imgSize**2, 3*self.F.shape[0]))
         
             # compute dNdV
-            dNdV = computedNdV(V,F)
+            dNdV = computedNdV(self.V,self.F)
         
             # compute dV
             dV = dR * dRdN * dNdV
@@ -105,22 +110,25 @@ class Paparazzi(object):
             secondM = beta2*secondM + (1-beta2)*(dV**2)
             firstM_cor = firstM / (1-np.power(beta1,timeStep))
             secondM_cor = secondM / (1-np.power(beta2,timeStep))
-            newV = V - lr/(np.sqrt(secondM_cor)+eps) * (beta1*firstM_cor + ((1-beta1)*dV/(1-np.power(beta1,timeStep)))) 
+            newV = self.V - lr/(np.sqrt(secondM_cor)+eps) * (beta1*firstM_cor + ((1-beta1)*dV/(1-np.power(beta1,timeStep)))) 
         
-            print("iteration: %d/%d".format(iteration, maxIter))
+            print("iteration: %d/%d" % (iteration, maxIter))
         
             # filter gradients eltopo
-            if np.mod(iteration, eltopoFreq) == 0:
+            if np.mod(iteration, self.eltopoFreq) == 0:
                 t_eltopo = time.time()
                 self.eltopo.update(newV)
                 newV, newF = self.eltopo.getMesh()
                 firstM = np.zeros(newV.shape)
                 secondM = np.zeros(newV.shape)
                 timeStep = 0
-                print('eltopo time:', time.time() - t_eltopo)
+                print('eltopo time: %f' % (time.time() - t_eltopo))
                 gc.collect()
-            V = newV
+                if outputFolder is not None:
+                    writeOBJ(outputFolder + str(iteration) + '.obj', newV, newF)
+            self.V = newV
+            self.F = newF
         renderer.close()
-        return V,F
+        return self.V,self.F
 
 

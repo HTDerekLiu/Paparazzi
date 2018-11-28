@@ -1,1 +1,5 @@
 *.pyc
+build/
+experiments/gfResults/
+experiments/spResults/
+experiments/l0Results/
