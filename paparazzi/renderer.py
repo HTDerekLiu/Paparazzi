@@ -3,6 +3,7 @@ import numpy as np
 from pyglfw.libapi import *
 from OpenGL.GL import *
 from OpenGL.arrays import vbo
+from faceNormals import faceNormals
 
 class PaparazziRenderer(object):
     def __init__(self, imgSize = 256):

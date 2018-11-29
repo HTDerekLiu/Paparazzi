@@ -1,4 +1,5 @@
 from paparazzi import Paparazzi
+from paparazzi.optimizer import NADAMOptimizer
 
 
 meshPath = '../assets/bumpyCube_normalize.obj' # normalized geometry bounded by radius 1 cube
@@ -10,11 +11,15 @@ eps = 0.02
 maxIter = 3000
 imgSize = 128
 windowSize = 0.5
-lr = 1e-4
-p = Paparazzi(meshPath,offsetPath,imgSize=imgSize,windowSize=windowSize)
+nadam_params = {"learning_rates":{0:1e-4,2500:1e-5}}
 
 
 filterFunc = lambda img: guidedFilter(img, img, r, eps)
 
+p = Paparazzi(filterFunc
+        ,NADAMOptimizer
+        ,nadam_params
+        ,imgSize=imgSize
+        ,windowSize=windowSize)
 
-p.run(maxIter,filterFunc)
+p.run(meshPath,offsetPath,maxIter)

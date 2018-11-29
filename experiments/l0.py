@@ -1,5 +1,6 @@
 from paparazzi import Paparazzi
-from imageL0Smooth import *
+from paparazzi.optimizer import NADAMOptimizer
+from paparazzi.imageL0Smooth import *
 
 
 meshPath = '../assets/bumpyCube_normalize.obj' # normalized geometry bounded by radius 1 cube
@@ -10,8 +11,12 @@ lam = 0.01
 maxIter = 3000
 imgSize = 256
 windowSize = 0.5
-lr = 1e-4
+nadam_params = {"learning_rates":{0:1e-4,2500:1e-5}}
 filterFunc = lambda img: imageL0Smooth(img,lam)
-p = Paparazzi(meshPath,offsetPath,imgSize=imgSize,windowSize=windowSize)
+p = Paparazzi(filterFunc
+        ,NADAMOptimizer
+        ,nadam_params
+        ,imgSize=imgSize
+        ,windowSize=windowSize)
 
-p.run(maxIter,filterFunc)
+p.run(meshPath,offsetPath,maxIter)

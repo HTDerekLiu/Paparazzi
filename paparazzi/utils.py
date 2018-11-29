@@ -7,8 +7,8 @@ import sys
 
 
 # spetial
-import pyigl as igl
-from iglhelpers import *
+#import pyigl as igl
+#from iglhelpers import *
 
 
 def computedNdV(V,F):

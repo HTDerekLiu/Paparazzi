@@ -10,13 +10,17 @@ numSegments = 100
 maxIter = 3000
 imgSize = 256
 windowSize = 0.3
-lr = 6e-5
+nadam_params = {"learning_rates":{0:6e-5,2500:1e-5}}
 
 
 def filterFunc(img):
     segs = skimage.segmentation.slic(img, compactness=compactness, n_segments=numSegments)
     return skimage.color.label2rgb(segs, img, kind='avg')
 
-p = Paparazzi(meshPath,offsetPath,imgSize=imgSize,windowSize=windowSize)
+p = Paparazzi(filterFunc
+        ,NADAMOptimizer
+        ,nadam_params
+        ,imgSize=imgSize
+        ,windowSize=windowSize)
 
-p.run(maxIter,filterFunc)
+p.run(meshPath,offsetPath,maxIter)
