@@ -7,8 +7,8 @@ from writeOBJ import *
 import skimage
 import skimage.segmentation
 
-meshPath = '../assets/bumpyCube_normalize.obj' # normalized geometry bounded by radius 1 cube
-offsetPath = '../assets/bumpyCube_normalize_offset.obj' # offset surface 
+meshPath = '../meshes/bumpyCube_normalize.obj' # normalized geometry bounded by radius 1 cube
+offsetPath = '../meshes/bumpyCube_normalize_offset.obj' # offset surface 
 
 # save results
 outputFolder = './spResults/'

@@ -6,8 +6,8 @@ from PaparazziFilter import *
 from writeOBJ import *
 from imageL0Smooth import *
 
-meshPath = '../assets/bumpyCube_normalize.obj' # normalized geometry bounded by radius 1 cube
-offsetPath = '../assets/bumpyCube_normalize_offset.obj' # offset surface 
+meshPath = '../meshes/bumpyCube_normalize.obj' # normalized geometry bounded by radius 1 cube
+offsetPath = '../meshes/bumpyCube_normalize_offset.obj' # offset surface 
 
 # save results
 outputFolder = './l0Results/'

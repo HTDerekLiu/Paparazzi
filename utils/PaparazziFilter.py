@@ -65,11 +65,6 @@ class PaparazziFilter(object):
 
             # image filtering
             filtImg = filterFunc(img)
-
-            # # draw current image (for debug)
-            # if iteration % 25 == 0:
-            #     misc.imsave('img.jpg', (img*255).astype(np.uint8))
-            #     misc.imsave('filtImg.jpg', (filtImg*255).astype(np.uint8))
         
             # compute delta R
             dR = (img - filtImg).reshape(1,3*self.imgSize**2)
@@ -115,7 +110,7 @@ class PaparazziFilter(object):
             print("iteration: %d/%d" % (iteration, maxIter))
         
             # filter gradients eltopo
-            if np.mod(iteration, self.eltopoFreq) == 0:
+            if np.mod(iteration+1, self.eltopoFreq) == 0:
                 t_eltopo = time.time()
                 self.eltopo.update(newV)
                 newV, newF = self.eltopo.getMesh()
@@ -126,8 +121,8 @@ class PaparazziFilter(object):
                 gc.collect()
                 if outputFolder is not None:
                     writeOBJ(outputFolder + str(iteration) + '.obj', newV, newF)
+                self.F = newF
             self.V = newV
-            self.F = newF
         renderer.close()
         return self.V,self.F
 
