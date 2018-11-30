@@ -3,6 +3,14 @@ import scipy
 import scipy.sparse as sparse
 
 def computedNdV(V,F):
+    ## Compute derivative of face normal wrt vertex positions
+	##
+	## Inputs:
+	## V: n-by-3 numpy ndarray of vertex positions
+	## F: m-by-3 numpy ndarray of face indices
+	##
+	## Outputs:
+	## dndv: 3|F|-by-3|V| numpy ndarray
     row = np.zeros(F.shape[0]*27)
     col = np.zeros(F.shape[0]*27)
     data = np.zeros(F.shape[0]*27)

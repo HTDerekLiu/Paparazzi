@@ -13,7 +13,6 @@ from writeOBJ import *
 from PaparazziRenderer import *
 from eltopo import *
 
-
 class PaparazziFilter(object):
 
     def __init__(self,meshPath,offsetPath, imgSize

@@ -1,10 +1,11 @@
+## References
+## He, Sun, "Fast Guided Filter", 2015
+## This is the fast guided filter implementation adapted from 
+## https://github.com/swehrwein/python-guided-filter
+
 import numpy as np
 import scipy as sp
 import scipy.ndimage
-"""
-This is the fast guided filter implementation adapted from 
-https://github.com/swehrwein/python-guided-filter
-"""
 
 def box(img, r):
     """ O(1) box filter

@@ -1,15 +1,11 @@
 ## Referneces:
-## 1. Xu, "Image Smoothing via L0 Gradient Minimization", 2011
-## 2. https://github.com/t-suzuki/l0_gradient_minimization_test
+## 1. Xu et al. "Image Smoothing via L0 Gradient Minimization", 2011
+## 2. This code is adapted from https://github.com/t-suzuki/l0_gradient_minimization_test
 
 import numpy as np
 from scipy.fftpack import fft2, ifft2
-import matplotlib.pyplot as plt
 
 def imageL0Smooth(I, lmd = 0.05):
-	# I: original image
-	# S: output image
-
 	betaMax = 1e5
 	beta = 0.1
 	betaRate = 2.0

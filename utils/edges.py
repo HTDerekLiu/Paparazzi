@@ -1,7 +1,13 @@
-# compute edges from faces
 import numpy as np
 
 def edges(F):
+	## compute edges list from faces
+	##
+	## Inputs:
+	## F: m-by-3 numpy ndarray of face indices
+	##
+	## Outputs:
+	## edge: |E|-by-2 numpy ndarray
 	idx = np.array([[0,1], [1,2], [2,0]])
 	EIdx1 = np.reshape(F[:,idx[:,0:1]], (np.product(F.shape),1))
 	EIdx2 = np.reshape(F[:,idx[:,1:2]], (np.product(F.shape),1))

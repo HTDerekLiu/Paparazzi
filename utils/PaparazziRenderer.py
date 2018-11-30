@@ -1,6 +1,4 @@
 import numpy as np
-# for pyopengl
-# import pyglfw
 from pyglfw.libapi import *
 from OpenGL.GL import *
 from OpenGL.arrays import vbo

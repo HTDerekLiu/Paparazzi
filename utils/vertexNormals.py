@@ -1,10 +1,3 @@
-	## Inputs:
-## V: n-by-3 numpy ndarray of vertex positions
-## F: m-by-3 numpy ndarray of face indices
-##
-## Outputs:
-## vertex normals: n-by-3 numpy ndarray
-
 import numpy as np
 import sys
 import scipy
@@ -13,6 +6,14 @@ from normalizeRow import *
 import numpy.matlib as matlib
 
 def vertexNormals(V, F):    
+	## Compute vertex normal
+	##
+	## Inputs:
+	## V: n-by-3 numpy ndarray of vertex positions
+	## F: m-by-3 numpy ndarray of face indices
+	##
+	## Outputs:
+	## vertex normals: n-by-3 numpy ndarray
 	vec1 = V[F[:,1],:] - V[F[:,0],:]
 	vec2 = V[F[:,2],:] - V[F[:,0],:]
 	FN = np.cross(vec1, vec2) / 2
