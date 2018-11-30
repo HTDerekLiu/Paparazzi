@@ -27,3 +27,13 @@ bash build_pyeltopo.sh [-i] [-h] [-p pythonpath]
 * `-i` to install (recommended)
 * `-p` to use the python found at `pythonpath`
 where `pythonpath` can be found by typing `which python` in the terminal.
+
+#### Bibtex
+```
+@article{Liu:Paparazzi:2018,
+  title = {Paparazzi: Surface Editing by way of Multi-View Image Processing},
+  author = {Hsueh-Ti Derek Liu and Michael Tao and Alec Jacobson},
+  year = {2018},
+  journal = {ACM Transactions on Graphics}, 
+}
+```
