@@ -17,6 +17,8 @@ p = Paparazzi(filterFunc
         ,NADAMOptimizer
         ,nadam_params
         ,imgSize=imgSize
-        ,windowSize=windowSize)
+        ,windowSize=windowSize
+        ,checkpoint_prefix="l0checkpoint-"
+        )
 
 p.run(meshPath,offsetPath,maxIter)

@@ -1,5 +1,6 @@
 from paparazzi import Paparazzi
 from paparazzi.optimizer import NADAMOptimizer
+from paparazzi.filters import guidedFilter
 
 
 meshPath = '../assets/bumpyCube_normalize.obj' # normalized geometry bounded by radius 1 cube
@@ -20,6 +21,8 @@ p = Paparazzi(filterFunc
         ,NADAMOptimizer
         ,nadam_params
         ,imgSize=imgSize
-        ,windowSize=windowSize)
+        ,windowSize=windowSize
+        ,checkpoint_prefix="gfcheckpoint-"
+        )
 
 p.run(meshPath,offsetPath,maxIter)

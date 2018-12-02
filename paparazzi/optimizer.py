@@ -4,6 +4,7 @@ import numpy as np
 class Optimizer(object):
     def run(self,V,maxIter=1000):
         myV = V.copy()
+        print("Starting iterative optimization")
         for mit in xrange(maxIter):
             print("iteration: {}/{}".format(mit, maxIter))
             if self.__step__(mit,myV):
@@ -54,10 +55,15 @@ class NADAMOptimizer(Optimizer):
 
     def run(self,V,maxIter=1000):
         myV = V.copy()
+        print("Starting NADAM optimization")
         for mit in xrange(maxIter):
             print("iteration: {}/{}".format(mit, maxIter))
             if self.__step__(myV,mit):
-                if self.cleanupFunc(myV,mit):
+                break
+            else:
+                ret,nV = self.cleanupFunc(myV,mit)
+                if ret:
+                    myV = nV
                     self.shape = myV.shape
                     self.__reset_state__()
 
@@ -88,7 +94,7 @@ class NADAMOptimizer(Optimizer):
         firstM_cor = self.firstM / (1-beta1**relative_it)
         secondM_cor = self.secondM / (1-beta2**relative_it)
         #return the update
-        V[:] = V - lr/(np.sqrt(secondM_cor)+self.eps) * (beta1*firstM_cor + ((1-beta1)*dV/(1-beta1**relative_it))) 
+        V[...] = V - lr/(np.sqrt(secondM_cor)+self.eps) * (beta1*firstM_cor + ((1-beta1)*dV/(1-beta1**relative_it))) 
         return False
 
 
