@@ -5,7 +5,7 @@ class Optimizer(object):
     def run(self,V,maxIter=1000):
         myV = V.copy()
         for mit in xrange(maxIter):
-            print("iteration: %d/%d".format(mit, maxIter))
+            print("iteration: {}/{}".format(mit, maxIter))
             if self.__step__(mit,myV):
                 break
 
@@ -55,7 +55,7 @@ class NADAMOptimizer(Optimizer):
     def run(self,V,maxIter=1000):
         myV = V.copy()
         for mit in xrange(maxIter):
-            print("iteration: %d/%d".format(mit, maxIter))
+            print("iteration: {}/{}".format(mit, maxIter))
             if self.__step__(myV,mit):
                 if self.cleanupFunc(myV,mit):
                     self.shape = myV.shape
@@ -72,7 +72,7 @@ class NADAMOptimizer(Optimizer):
         self.relative_iter += 1
         relative_it = self.relative_iter
         #update learning rates
-        if mit not in self.learning_rates:
+        if mit in self.learning_rates:
             self.learning_rate = self.learning_rates[mit]
 
         #aliasing for convenience 
@@ -82,13 +82,13 @@ class NADAMOptimizer(Optimizer):
         
         dV = self.gradFunc(V)
         #update 
-        firstM = beta1*firstM + (1-beta1)*dV
-        secondM = beta2*secondM + (1-beta2)*(dV**2)
+        self.firstM = beta1*self.firstM + (1-beta1)*dV
+        self.secondM = beta2*self.secondM + (1-beta2)*(dV**2)
         #remove bias
-        firstM_cor = firstM / (1-beta1**relative_it)
-        secondM_cor = secondM / (1-beta2**relative_it)
+        firstM_cor = self.firstM / (1-beta1**relative_it)
+        secondM_cor = self.secondM / (1-beta2**relative_it)
         #return the update
-        V[:] = V - lr/(np.sqrt(secondM_cor)+eps) * (beta1*firstM_cor + ((1-beta1)*dV/(1-beta1**relative_it))) 
+        V[:] = V - lr/(np.sqrt(secondM_cor)+self.eps) * (beta1*firstM_cor + ((1-beta1)*dV/(1-beta1**relative_it))) 
         return False
 
 

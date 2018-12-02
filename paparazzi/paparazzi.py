@@ -10,6 +10,9 @@ import time
 import skimage
 import skimage.segmentation
 
+import numpy as np
+import scipy
+import scipy.sparse as sparse
 
 
 class Paparazzi(object):
@@ -86,7 +89,7 @@ class Paparazzi(object):
             my_ones * np.dot(LDir[:,1], LC[:,2]), # dBdNy
             my_ones * np.dot(LDir[:,2], LC[:,2]), # dBdNz
             ))
-        dRdN = sparse.csc_matrix((data, (row, col)), shape=(3*imgSize**2, 3*F.shape[0]))
+        dRdN = sparse.csc_matrix((data, (row, col)), shape=(3*self.imgSize**2, 3*self.F.shape[0]))
         
         # compute dNdV
         dNdV = computedNdV(V,F)

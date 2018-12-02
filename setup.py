@@ -10,6 +10,7 @@ setup(name='paparazzi',
       url='http://www.dgp.toronto.edu/projects/paparazzi/',
       py_modules=['paparazzi'],
       install_requires=[
+          'pyopengl',
           'pyglfw',
           ],
       )
