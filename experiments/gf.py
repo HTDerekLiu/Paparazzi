@@ -1,13 +1,15 @@
 import os
 import sys
-sys.path.append('../utils')
 
-from PaparazziFilter import *
+
+from paparazzi import *
 from guidedFilter import *
 from writeOBJ import *
+from paparazzi.optimizer import NADAMOptimizer
 
-meshPath = '../meshes/bumpyCube_normalize.obj' # normalized geometry bounded by radius 1 cube
-offsetPath = '../meshes/bumpyCube_normalize_offset.obj' # offset surface 
+meshPath = '../assets/bumpyCube_normalize.obj' # normalized geometry bounded by radius 1 cube
+offsetPath = '../assets/bumpyCube_normalize_offset.obj' # offset surface of the geometry 
+# fast guided filter [He et al. 2015]
 
 # save results
 outputFolder = './gfResults/'
@@ -22,11 +24,17 @@ eps_gf = 1e-8
 maxIter = 3000
 imgSize = 128
 windowSize = 0.5
-lr = 1e-4
+nadam_params = {"learning_rates":{0:1e-4,2500:1e-5}}
 
 def filterFunc(img):
     return guidedFilter(img, img, r, eps_gf)
 
-p = PaparazziFilter(meshPath,offsetPath,imgSize=imgSize,windowSize=windowSize)
-V,F = p.run(maxIter, lr, filterFunc, outputFolder = outputFolder)
+p = Paparazzi(filterFunc
+        ,NADAMOptimizer
+        ,nadam_params
+        ,imgSize=imgSize
+        ,windowSize=windowSize
+        ,checkpoint_prefix=os.path.join(outputFolder,"gfcheckpoint-")
+        )
+V,F = p.run(meshPath,offsetPath,maxIter)
 writeOBJ('gf.obj', V, F)

@@ -1,15 +1,13 @@
-import os
-import sys
-sys.path.append('../utils')
-
-from PaparazziFilter import *
+from paparazzi import Paparazzi
+from paparazzi.optimizer import NADAMOptimizer
+from paparazzi.imageL0Smooth import *
 from writeOBJ import *
 import skimage
 import skimage.segmentation
 
-meshPath = '../meshes/bumpyCube_normalize.obj' # normalized geometry bounded by radius 1 cube
-offsetPath = '../meshes/bumpyCube_normalize_offset.obj' # offset surface 
 
+meshPath = '../assets/bumpyCube_normalize.obj' # normalized geometry bounded by radius 1 cube
+offsetPath = '../assets/bumpyCube_normalize_offset.obj' # offset surface of the geometry 
 # save results
 outputFolder = './spResults/'
 try:
@@ -23,13 +21,21 @@ numSegments = 100
 maxIter = 3000
 imgSize = 256
 windowSize = 0.3
-lr = 2e-5
+nadam_params = {"learning_rates":{0:2e-5,2500:1e-5}}
+
 
 def filterFunc(img):
     segs = skimage.segmentation.slic(img, compactness=compactness, n_segments=numSegments)
     return skimage.color.label2rgb(segs, img, kind='avg')
 
-p = PaparazziFilter(meshPath,offsetPath,imgSize=imgSize,windowSize=windowSize)
+p = Paparazzi(filterFunc
+        ,NADAMOptimizer
+        ,nadam_params
+        ,imgSize=imgSize
+        ,windowSize=windowSize
+        ,checkpoint_prefix=os.path.join(outputFolder,"spcheckpoint-")
+        )
 
-V,F = p.run(maxIter,lr,filterFunc,outputFolder = outputFolder)
+
+V,F = p.run(meshPath,offsetPath,maxIter)
 writeOBJ('sp.obj', V, F)

@@ -8,8 +8,5 @@ setup(name='paparazzi',
       author='Derek Liu, Michael Tao, Alec Jacobson',
       author_email='derek@dgp.toronto.edu, mtao@dgp.toronto.edu, jacobson@dgp.toronto.edu',
       url='http://www.dgp.toronto.edu/projects/paparazzi/',
-      py_modules=['paparazzi'],
-      install_requires=[
-          'pyglfw',
-          ],
+      packages=['paparazzi'],
       )
