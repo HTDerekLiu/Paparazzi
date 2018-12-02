@@ -1,0 +1,4 @@
+pyopengl
+pyglfw
+scikit-image
+-e git+http://github.com/mtao/pyeltopo.git#egg=pyeltopo
