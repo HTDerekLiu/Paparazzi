@@ -3,8 +3,8 @@ import sys
 
 
 from paparazzi import *
-from guidedFilter import *
-from writeOBJ import *
+from paparazzi.filters import *
+from paparazzi.writeOBJ import *
 from paparazzi.optimizer import NADAMOptimizer
 
 meshPath = '../assets/bumpyCube_normalize.obj' # normalized geometry bounded by radius 1 cube

@@ -1,9 +1,10 @@
 from paparazzi import Paparazzi
 from paparazzi.optimizer import NADAMOptimizer
 from paparazzi.imageL0Smooth import *
-from writeOBJ import *
+from paparazzi.writeOBJ import *
 import skimage
 import skimage.segmentation
+import os
 
 
 meshPath = '../assets/bumpyCube_normalize.obj' # normalized geometry bounded by radius 1 cube
