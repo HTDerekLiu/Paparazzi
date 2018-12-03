@@ -53,6 +53,17 @@ class Paparazzi(object):
 
 
     def __gradient__(self,V):
+        F = self.F
+        # sample camera from offset surface
+        viewIdx = np.searchsorted(self.VAoCumsum,np.random.rand())
+        self.renderer.setCamera(self.windowSize, self.Vo[viewIdx,:], -self.VNo[viewIdx,:])
+
+        # set light 
+        x,y,z = self.renderer.getCameraFrame()
+        self.renderer.setLights(x,y,z, np.array([1,0,0]), np.array([0,1,0]), np.array([0,0,1])) # 3 rendererGB directional lights
+
+        # set geometry
+        self.renderer.setMesh(V,F)
 
         #compu9te partial derivatives
         dR = self.dR(V)
@@ -117,17 +128,6 @@ class Paparazzi(object):
 
 
     def dR(self,V):
-        F = self.F
-        # sample camera from offset surface
-        viewIdx = np.searchsorted(self.VAoCumsum,np.random.rand())
-        self.renderer.setCamera(self.windowSize, self.Vo[viewIdx,:], -self.VNo[viewIdx,:])
-        
-        # set light 
-        x,y,z = self.renderer.getCameraFrame()
-        self.renderer.setLights(x,y,z, np.array([1,0,0]), np.array([0,1,0]), np.array([0,0,1])) # 3 rendererGB directional lights
-        
-        # set geometry
-        self.renderer.setMesh(V,F)
         
         # rendering
         img = self.renderer.draw()

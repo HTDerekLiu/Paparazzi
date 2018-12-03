@@ -27,7 +27,7 @@ class NADAMOptimizer(Optimizer):
     def __init__(self
             ,gradFunc
             ,shape
-            ,cleanupFunc = lambda i,x:False
+            ,cleanupFunc = (lambda i,x:False,x)
             ,learning_rates= {0:1e-5}
             ,beta1 = 0.9
             ,beta2 = 0.999
