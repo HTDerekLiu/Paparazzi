@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.linalg
 
 
 class Optimizer(object):
@@ -7,12 +8,17 @@ class Optimizer(object):
         print("Starting iterative optimization")
         for mit in xrange(maxIter):
             print("iteration: {}/{}".format(mit, maxIter))
-            if self.__step__(mit,myV):
+            if self.__step__(myV,mit):
                 break
+            else:
+                ret,myV = self.cleanupFunc(myV,mit)
 
         return myV
 
 
+    def __init__(self, gradFunc, cleanupFunc):
+        self.gradFunc = gradFunc
+        self.cleanupFunc = cleanupFunc
 
     def __step__(self,V,mit):
         raise NotImplementedError()
@@ -20,19 +26,35 @@ class Optimizer(object):
 
 
 
+class GDOptimizer(Optimizer):
+    def __init__(self
+            ,gradFunc
+            ,cleanupFunc = lambda i,x:(False,x)
+            ,timestep=1e-2
+            ,eps = 1e-8
+            ):
+        super(GDOptimizer,self).__init__(gradFunc,cleanupFunc)
+        self.timestep = timestep
+        self.eps = 1e-8
+
+    def __step__(self,V,mit):
+
+        dV = self.gradFunc(V)
+        V[...] = V - self.timestep * dV
+        return np.linalg.norm(V) < self.eps
 
 
 
 class NADAMOptimizer(Optimizer):
     def __init__(self
             ,gradFunc
-            ,shape
-            ,cleanupFunc = (lambda i,x:False,x)
+            ,cleanupFunc = lambda i,x:(False,x)
             ,learning_rates= {0:1e-5}
             ,beta1 = 0.9
             ,beta2 = 0.999
             ,eps = 1e-8
             ):
+        super(NADAMOptimizer,self).__init__(gradFunc,cleanupFunc)
         
         if type(learning_rates) is dict:
             self.learning_rates = learning_rates
@@ -41,15 +63,11 @@ class NADAMOptimizer(Optimizer):
         self.learning_rate = self.learning_rates[0]
 
 
-        self.gradFunc = gradFunc
-        self.cleanupFunc = cleanupFunc
 
         self.beta1 = beta1 
         self.beta2 = beta2 
         self.eps = eps 
 
-        self.shape = shape
-        self.__reset_state__()
         self.relative_iter = 0
 
 
@@ -61,19 +79,20 @@ class NADAMOptimizer(Optimizer):
             if self.__step__(myV,mit):
                 break
             else:
-                ret,nV = self.cleanupFunc(myV,mit)
+                ret,myV = self.cleanupFunc(myV,mit)
                 if ret:
-                    myV = nV
-                    self.shape = myV.shape
-                    self.__reset_state__()
+                    #reset shape
+                    self.relative_iter = 0
 
 
-    def __reset_state__(self):
-        self.firstM = np.zeros(self.shape)
-        self.secondM = np.zeros(self.shape)
+    def __reset_state__(self,V):
+        self.firstM = np.zeros(V.shape)
+        self.secondM = np.zeros(V.shape)
         self.relative_iter = 0
 
     def __step__(self,V,mit):
+        if self.relative_iter == 0:
+            self.__reset_state__(V)
 
         self.relative_iter += 1
         relative_it = self.relative_iter

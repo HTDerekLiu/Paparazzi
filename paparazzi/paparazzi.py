@@ -53,6 +53,21 @@ class Paparazzi(object):
 
 
     def __gradient__(self,V):
+        
+        self.__configure_renderer__(V)
+
+        #compu9te partial derivatives
+        dR = self.dR(V)
+        dRdN = self.dRdN()
+        dNdV = self.dNdV(V)
+        
+        # compute dV
+        dV = dR * dRdN * dNdV
+        # Transform into a |V|x3 vector
+        dV = dV.reshape((dV.shape[1]/3, 3))
+        return dV
+
+    def __configure_renderer__(self,V):
         F = self.F
         # sample camera from offset surface
         viewIdx = np.searchsorted(self.VAoCumsum,np.random.rand())
@@ -65,16 +80,6 @@ class Paparazzi(object):
         # set geometry
         self.renderer.setMesh(V,F)
 
-        #compu9te partial derivatives
-        dR = self.dR(V)
-        dRdN = self.dRdN()
-        dNdV = self.dNdV(V)
-        
-        # compute dV
-        dV = dR * dRdN * dNdV
-        # Transform into a |V|x3 vector
-        dV = dV.reshape((dV.shape[1]/3, 3))
-        return dV
     def __cleanup__(self, V,mit):
         # filter gradients eltopo
         did_cleanup = False
@@ -119,7 +124,6 @@ class Paparazzi(object):
 
         V = self.V
         opt = self.optimizer(self.__gradient__
-                ,V.shape
                 ,cleanupFunc=self.__cleanup__
                 ,**self.optimizer_params)
         V = opt.run(V,maxIter)

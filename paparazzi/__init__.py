@@ -1,1 +1,1 @@
-from paparazzi import *
+from paparazzi import Paparazzi
