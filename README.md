@@ -2,12 +2,11 @@
 Paparazzi: Surface Editing by way of Multi-view Image Processing
 
 ### Modular version
-We have two versions available: one with a somewhat monolithic "Matlab-esque" main loop in the ```master``` branch and a a more [modular version](https://github.com/HTDerekLiu/Paparazzi/tree/modular) in the ```modular``` branch that separates separates components of our main loop that is perhaps more "pythonic".
+We have two versions available: one with a "Matlab-esque" main loop in the ```master``` branch and a a more [modular version](https://github.com/HTDerekLiu/Paparazzi/tree/modular) in the ```modular``` branch that separates separates components of our main loop.
 The modular branch can be installed installed with ```pip```:
 ```bash
 pip2 install git+https://github.com/HTDerekLiu/Paparazzi.git@modular
 ```
-
 
 #### Fetching the repo
 Please remember to pull the submodules for this repository:
