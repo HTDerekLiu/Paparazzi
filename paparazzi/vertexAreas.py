@@ -1,17 +1,16 @@
+## Inputs:
+## V: n-by-3 numpy ndarray of vertex positions
+## F: m-by-3 numpy ndarray of face indices
+##
+## Outputs:
+## vertex areas: n-by-3 numpy ndarray
+
 import numpy as np
 import numpy.matlib as matlib
 import scipy
 import scipy.sparse 
 
 def vertexAreas(V, F):
-	## Compute vertex area 
-	##
-	## Inputs:
-	## V: n-by-3 numpy ndarray of vertex positions
-	## F: m-by-3 numpy ndarray of face indices
-	##
-	## Outputs:
-	## vertex areas: n-by-0 numpy ndarray
 	vec1 = V[F[:,1],:] - V[F[:,0],:]
 	vec2 = V[F[:,2],:] - V[F[:,0],:]
 	faceNormal = np.cross(vec1, vec2) / 2

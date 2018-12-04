@@ -1,16 +1,9 @@
 import numpy as np
 
-def readOBJ(filepath):
-    ## read mesh from .obj file
-    ##
-    ## Inputs:
-    ## filepath: file to obj file
-    ##
-    ## Outputs:
-    ## V: n-by-3 numpy ndarray of vertex positions
-    ## F: m-by-3 numpy ndarray of face indices
+def readOBJ(filepath, returnColor = False):
     V = []
     F = []
+    VC = []
     with open(filepath, "rb") as f:
         lines = f.readlines()
     while True:
@@ -22,9 +15,18 @@ def readOBJ(filepath):
             elif line.strip().startswith("vt"):
                 continue
             elif line.strip().startswith("v"):
-                vertices = line.replace("\n", "").split(" ")[1:4]
-                vertices = np.delete(vertices,np.argwhere(vertices == np.array([''])).flatten())
-                V.append(map(float, vertices))
+                lineLength = len(line.replace("\n", "").split(" "))
+                if lineLength == 7: # has vertex color and vertices
+                    vertices = line.replace("\n", "").split(" ")[1:4]
+                    vertices = np.delete(vertices,np.argwhere(vertices == np.array([''])).flatten())
+                    V.append(map(float, vertices))
+                    vertexColor = line.replace("\n", "").split(" ")[4:]
+                    vertexColor = np.delete(vertexColor,np.argwhere(vertexColor == np.array([''])).flatten())
+                    VC.append(map(float, vertexColor))
+                elif lineLength == 4:
+                    vertices = line.replace("\n", "").split(" ")[1:4]
+                    vertices = np.delete(vertices,np.argwhere(vertices == np.array([''])).flatten())
+                    V.append(map(float, vertices))
             elif line.strip().startswith("f"):
                 t_index_list = []
                 for t in line.replace("\n", "").split(" ")[1:]:
@@ -39,4 +41,8 @@ def readOBJ(filepath):
         break
     V = np.asarray(V)
     F = np.asarray(F)
-    return V, F
+    VC = np.asarray(VC)
+    if returnColor is True:
+        return V, F, VC
+    else:
+        return V, F

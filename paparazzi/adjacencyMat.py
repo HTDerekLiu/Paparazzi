@@ -1,13 +1,14 @@
+## Inputs:
+## F: m-by-3 numpy ndarray of face indices
+##
+## Outputs:
+## vertex adjacency matrix: sparse.csr_matrix with size |V|-by-|V|
+
 import numpy as np
 import scipy
 import scipy.sparse
 
 def adjacencyMat(F):
-    ## Inputs:
-    ## F: m-by-3 numpy ndarray of face indices
-    ##
-    ## Outputs:
-    ## vertex adjacency matrix: sparse.csr_matrix with size |V|-by-|V|
     idx = np.array([[0,1], [1,2], [2,0]]) # assume we have simplex with DOF=3
     edgeIdx1 = np.reshape(F[:,idx[:,0]], (np.product(F.shape)))
     edgeIdx2 = np.reshape(F[:,idx[:,1]], (np.product(F.shape)))
