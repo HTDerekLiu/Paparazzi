@@ -1,5 +1,5 @@
 # Paparazzi
-This is the sample code for _Paparazzi: Surface Editing by way of Multi-view Image Processing_.
+Paparazzi: Surface Editing by way of Multi-view Image Processing
 
 #### Fetching the repo
 Please remember to pull the submodules for this repository:
