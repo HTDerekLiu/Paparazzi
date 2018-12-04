@@ -1,32 +1,24 @@
 # Paparazzi
 Paparazzi: Surface Editing by way of Multi-view Image Processing
 
-#### Fetching the repo
-Please remember to pull the submodules for this repository:
+#### Installation
+Paparazzi can be installed as a ```pip``` installable Python2 library:
 ```bash
-git submodule update --init --recursive
+pip2 install git+https://github.com/HTDerekLiu/Paparazzi.git@modular
 ```
 
-#### Setup
-Paparazzi is tested on Ubuntu 16.04 machine on python 2.7. Dependencies include Eigen, BLAS, LAPACK, PyOpenGL, and PyGLFW. One option to install the dependencies is to run
+Paparazzi depends on [PyElTopo](https://github.com/mtao/pyeltopo), which in turn depends on a fork of [ElTopo](https://github.com/tysonbrochu/eltopo). Although ```pip``` will install these dependencies will automatically be pulled, ElTopo depends on several C/C++ dependencies that ```pip``` cannot handle and must be installed through other means:
+
+### Dependencies
+Paparazzi is tested on Ubuntu 16.04 machine on python 2.7. Dependencies include Eigen, BLAS, LAPACK. One option to install the dependencies is to run, on an apt-based system (Ubuntu/Debian):
+```bash
+apt-get install libeigen3-dev libblas-dev liblapack-dev libglfw3-dev
 ```
-sudo apt-get install libeigen3-dev
-sudo apt-get install libblas-dev
-sudo apt-get install liblapack-dev
-pip install PyOpenGL
-sudo apt-get install libglfw3
-sudo apt-get install libglfw3-dev
-pip install pyglfw
+On a portage-based system (Gentoo/Funtoo) this would be
+```bash
+emerge blas-reference eigen:3 glfwlapack
 ```
 
-Paparazzi uses pyeltopo, a tool necessary for mesh cleaning, please run and install it with the `build_pyeltopo.sh` script
-```bash
-bash build_pyeltopo.sh [-i] [-h] [-p pythonpath]
-```
-* `-h` to get a help message
-* `-i` to install (recommended)
-* `-p` to use the python found at `pythonpath`
-where `pythonpath` can be found by typing `which python` in the terminal.
 
 #### Bibtex
 ```
