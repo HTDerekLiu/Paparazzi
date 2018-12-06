@@ -8,7 +8,7 @@ The modular branch can be installed installed with ```pip```:
 pip2 install git+https://github.com/HTDerekLiu/Paparazzi.git@modular
 ```
 
-#### Fetching the repo
+### Fetching the repo
 Please remember to pull the submodules for this repository:
 ```bash
 git submodule update --init --recursive
