@@ -1,3 +1,3 @@
-[submodule "extern/eltopo"]
-	path = extern/eltopo
-	url = http://github.com/mtao/eltopo
+[submodule "extern/pyeltopo"]
+	path = extern/pyeltopo
+	url = https://github.com/mtao/pyeltopo
