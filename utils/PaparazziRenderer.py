@@ -1,5 +1,5 @@
 import numpy as np
-from pyglfw.libapi import *
+import glfw
 from OpenGL.GL import *
 from OpenGL.arrays import vbo
 
@@ -108,17 +108,17 @@ class PaparazziRenderer(object):
         }
         """
 
-        if not glfwInit():
+        if not glfw.init():
             print("Failed to initialize GLFW")
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3)
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3)
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
-        glfwWindowHint(GLFW_VISIBLE, GL_FALSE)
+        glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 3)
+        glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 3)
+        glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL_TRUE)
+        glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
+        glfw.window_hint(glfw.VISIBLE, GL_FALSE)
 
-        self.window = glfwCreateWindow(self.imgSize, self.imgSize, "VAO Test", None, None)
-        glfwMakeContextCurrent(self.window)
-        glfwSwapInterval(0) # disable vsync
+        self.window = glfw.create_window(self.imgSize, self.imgSize, "VAO Test", None, None)
+        glfw.make_context_current(self.window)
+        glfw.swap_interval(0) # disable vsync
 
         self.vao = GLuint()
         glGenVertexArrays(1, self.vao)
@@ -199,8 +199,8 @@ class PaparazziRenderer(object):
         #
         # Output
         #   rendered image
-        glfwMakeContextCurrent(self.window)
-        w, h = glfwGetWindowSize(self.window)
+        glfw.make_context_current(self.window)
+        w, h = glfw.get_window_size(self.window)
         glViewport(0,0, w, h) # for retina screen
 
         glBindFramebuffer(GL_FRAMEBUFFER, self.fbo)
@@ -260,7 +260,7 @@ class PaparazziRenderer(object):
         # Notes:
         #   the gradient computation only supports "flat" shading, thus
         #   "gouraud" shading can only be used for visualization
-        glfwMakeContextCurrent(self.window)
+        glfw.make_context_current(self.window)
         out = V[F.reshape(F.shape[0]*F.shape[1]),:]
         self.data_V = out.astype(np.float32)
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo_V)
@@ -373,7 +373,7 @@ class PaparazziRenderer(object):
         return ctypes.c_void_p(self.float_size(n))
 
     def close(self):
-        glfwTerminate()
+        glfw.terminate()
 
     def create_shader(self, vertex_shader, fragment_shader):
         vs_id = GLuint(glCreateShader(GL_VERTEX_SHADER))  # shader id for vertex shader
@@ -404,7 +404,7 @@ class PaparazziRenderer(object):
         return program_id
 
     def setQuad(self):
-        glfwMakeContextCurrent(self.window)
+        glfw.make_context_current(self.window)
         self.data_quad_V = np.array([\
             [-1.0, 1.0],[-1.0, -1.0],[1.0, -1.0],\
             [-1.0, 1.0],[1.0, -1.0],[1.0, 1.0]], dtype=np.float32)
@@ -449,8 +449,8 @@ class PaparazziRenderer(object):
     def drawNonBackgroundMask(self):
         # Output
         #   non-background pixel indices (need to "setMesh" first)
-        glfwMakeContextCurrent(self.window)
-        w, h = glfwGetWindowSize(self.window)
+        glfw.make_context_current(self.window)
+        w, h = glfw.get_window_size(self.window)
         glViewport(0,0, w, h) # for retina screen
 
         glBindFramebuffer(GL_FRAMEBUFFER, self.fbo)

@@ -23,7 +23,7 @@ sudo apt-get install liblapack-dev
 pip install PyOpenGL
 sudo apt-get install libglfw3
 sudo apt-get install libglfw3-dev
-pip install pyglfw
+pip install glfw
 ```
 
 Paparazzi uses pyeltopo, a tool necessary for mesh cleaning, please run and install it with the `build_pyeltopo.sh` script
