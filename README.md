@@ -44,3 +44,6 @@ where `pythonpath` can be found by typing `which python` in the terminal.
   journal = {ACM Transactions on Graphics}, 
 }
 ```
+
+#### Additional Reference
+Hsueh-Ti Derek Liu, Michael Tao, Chun-Liang Li, Derek Nowrouzezahrai, Alec Jacobson, _Beyond Pixel Norm-Balls: Parametric Adversaries using an Analytically Differentiable Renderer_, ICLR 2019
