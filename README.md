@@ -26,14 +26,10 @@ sudo apt-get install libglfw3-dev
 pip install pyglfw
 ```
 
-Paparazzi uses pyeltopo, a tool necessary for mesh cleaning, please run and install it with the `build_pyeltopo.sh` script
-```bash
-bash build_pyeltopo.sh [-b] [-h] [-p pythonpath]
+Paparazzi uses pyeltopo, a tool necessary for mesh cleaning, please run 
 ```
-* `-h` to get a help message
-* `-b` to build but not install
-* `-p` to use the python found at `pythonpath`
-where `pythonpath` can be found by typing `which python` in the terminal.
+pip install pyeltopo
+```
 
 #### Bibtex
 ```
